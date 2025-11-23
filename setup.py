@@ -8,8 +8,8 @@ def read_requirements(filename):
         return [line.strip() for line in f if line.strip() and not line.startswith('#')]
 
 setup(
-    name="ntsb-api",
-    version="1.0.7",
+    name="ntsb",
+    version="1.1.0",
     author="Amine harrabi",
     author_email="amineiiiiharrabi@gmail.com",
     description="A Python wrapper for the NTSB aviation accident database",

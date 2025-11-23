@@ -3,8 +3,8 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "NTSB-api"
-version = "1.0.7"
+name = "ntsb"
+version = "1.1.0"
 description = "A Python wrapper for the NTSB aviation accident database"
 readme = "README.md"
 authors = [
@@ -25,6 +25,11 @@ keywords = ["ntsb", "aviation", "accidents", "api", "wrapper"]
 dependencies = [
     "httpx>=0.26.0",
     "pydantic>=2.5.0",
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
+    "python-multipart>=0.0.6",
+    "python-dotenv>=1.0.0",
+    "aiofiles>=23.2.1",
 ]
 requires-python = ">=3.8"
 
