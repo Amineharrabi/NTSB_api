@@ -58,72 +58,6 @@ Meta endpoints:
 Rate limiting and logging are in-process and exist only to be a good citizen towards NTSB.
 
 ---
-
-## CLI Usage
-
-The package installs a `ntsb-api` CLI.
-
-### 1. Download a month (ZIP or JSON)
-
-```bash
-# Download raw ZIP
-ntsb-api download --year 2025 --month 4 \
-  --mode Aviation \
-  -o data/ntsb_2025_04.zip
-
-# Download and immediately extract JSON to disk
-ntsb-api download --year 2025 --month 4 \
-  --mode Aviation \
-  -o data/ntsb_2025_04.json \
-  --extract-json
-```
-
-### 2. Download a date range (ZIP or JSON)
-
-```bash
-# ZIP
-ntsb-api download-range \
-  --start-date 2025-04-01 \
-  --end-date   2025-04-30 \
-  --mode Aviation \
-  -o data/ntsb_2025_04_range.zip
-
-# JSON
-ntsb-api download-range \
-  --start-date 2025-04-01 \
-  --end-date   2025-04-30 \
-  --mode Aviation \
-  -o data/ntsb_2025_04_range.json \
-  --extract-json
-```
-
-Under the hood these commands:
-
-- call your local proxy server (`http://localhost:8000/api/v1/download/...`)
-- download the NTSB `FileExport` ZIP
-- optionally **extract the first `*.json` file** inside and write it to disk.
-
-### 3. Streamed JSON cases
-
-Use the proxy's in-memory parsing instead of writing files:
-
-```bash
-ntsb-api cases \
-  --start-date 2025-04-01 \
-  --end-date   2025-04-30 \
-  --mode Aviation \
-  --limit 50
-```
-
-This hits `/api/v1/cases` on the local server, which:
-
-- builds an NTSB `FileExport` payload for the date range + mode
-- downloads + parses the ZIP in memory
-- applies sorting/pagination
-- returns clean JSON (and the CLI prints a short summary).
-
----
-
 ## Python Usage
 
 ### 1. Client setup
@@ -191,6 +125,73 @@ This maps to `/api/v1/stats` and returns aggregate counts
 computed over the parsed cases (fatalities, injuries, by state, etc.).
 
 ---
+
+## CLI Usage
+
+The package installs a `ntsb-api` CLI.
+
+### 1. Download a month (ZIP or JSON)
+
+```bash
+# Download raw ZIP
+ntsb-api download --year 2025 --month 4 \
+  --mode Aviation \
+  -o data/ntsb_2025_04.zip
+
+# Download and immediately extract JSON to disk
+ntsb-api download --year 2025 --month 4 \
+  --mode Aviation \
+  -o data/ntsb_2025_04.json \
+  --extract-json
+```
+
+### 2. Download a date range (ZIP or JSON)
+
+```bash
+# ZIP
+ntsb-api download-range \
+  --start-date 2025-04-01 \
+  --end-date   2025-04-30 \
+  --mode Aviation \
+  -o data/ntsb_2025_04_range.zip
+
+# JSON
+ntsb-api download-range \
+  --start-date 2025-04-01 \
+  --end-date   2025-04-30 \
+  --mode Aviation \
+  -o data/ntsb_2025_04_range.json \
+  --extract-json
+```
+
+Under the hood these commands:
+
+- call your local proxy server (`http://localhost:8000/api/v1/download/...`)
+- download the NTSB `FileExport` ZIP
+- optionally **extract the first `*.json` file** inside and write it to disk.
+
+### 3. Streamed JSON cases
+
+Use the proxy's in-memory parsing instead of writing files:
+
+```bash
+ntsb-api cases \
+  --start-date 2025-04-01 \
+  --end-date   2025-04-30 \
+  --mode Aviation \
+  --limit 50
+```
+
+This hits `/api/v1/cases` on the local server, which:
+
+- builds an NTSB `FileExport` payload for the date range + mode
+- downloads + parses the ZIP in memory
+- applies sorting/pagination
+- returns clean JSON (and the CLI prints a short summary).
+
+---
+
+
 
 ## Design Notes
 
