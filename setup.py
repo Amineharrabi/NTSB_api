@@ -9,7 +9,7 @@ def read_requirements(filename):
 
 setup(
     name="ntsb-api",
-    version="1.0.6",
+    version="1.0.7",
     author="Amine harrabi",
     author_email="amineiiiiharrabi@gmail.com",
     description="A Python wrapper for the NTSB aviation accident database",
