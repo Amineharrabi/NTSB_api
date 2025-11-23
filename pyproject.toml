@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "NTSB-api"
+version = "1.0.0"
+description = "A Python wrapper for the NTSB aviation accident database"
+readme = "README.md"
+authors = [
+    {name = "amine harrabi", email = "amineiiiiharrabi@gmail.com"}
+]
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+keywords = ["ntsb", "aviation", "accidents", "api", "wrapper"]
+dependencies = [
+    "httpx>=0.26.0",
+    "pydantic>=2.5.0",
+]
+requires-python = ">=3.8"
+
+[project.optional-dependencies]
+server = [
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
+    "python-multipart>=0.0.6",
+    "python-dotenv>=1.0.0",
+    "aiofiles>=23.2.1",
+]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Amineharrabi/ntsb-api"
+Documentation = "https://github.com/Amineharrabi/ntsb-api/blob/main/docs/API.md"
+Repository = "https://github.com/Amineharrabi/ntsb-api"
+"Bug Tracker" = "https://github.com/Amineharrabi/ntsb-api/issues"
+
+[project.scripts]
+ntsb-api = "ntsb_api.cli:main"
+ntsb-server = "ntsb_api.server.main:run_server"
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311']
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"

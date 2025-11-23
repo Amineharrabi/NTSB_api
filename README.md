@@ -1,0 +1,197 @@
+
+# NTSB API Proxy (ntsb-api)
+
+A local, pip-installable proxy around the NTSB public **CAROL** API that:
+
+- simplifies the complex `FileExport` payloads into simple parameters
+- lets you **download raw ZIPs** or **directly get parsed JSON**
+- does **not** store or host any data – everything runs on the user's machine
+
+You install this library, run the server **locally**, and your code/CLI talks to
+`http://localhost:8000`. All requests to `data.ntsb.gov` go directly from your machine.
+
+---
+
+## Installation
+
+From a checkout (editable install):
+
+```bash
+pip install -e .[server]
+```
+
+Once published to PyPI the typical install will be:
+
+```bash
+pip install ntsb-api
+```
+
+---
+
+## Running the local server
+
+Start the FastAPI server (which proxies and parses NTSB data):
+
+```bash
+ntsb-server
+# or
+uvicorn ntsb_api.server.main:app --reload
+```
+
+The server exposes:
+
+- **Download (ZIP) endpoints**: `/api/v1/download/*`
+- **Streaming JSON endpoints**: `/api/v1/cases`, `/api/v1/cases/search`, `/api/v1/stats`
+
+Meta endpoints:
+
+- `GET /health` – health check
+- `GET /docs` – Swagger UI
+- `GET /redoc` – ReDoc
+
+Rate limiting and logging are in-process and exist only to be a good citizen towards NTSB.
+
+---
+
+## CLI Usage
+
+The package installs a `ntsb-api` CLI.
+
+### 1. Download a month (ZIP or JSON)
+
+```bash
+# Download raw ZIP
+ntsb-api download --year 2025 --month 4 \
+  --mode Aviation \
+  -o data/ntsb_2025_04.zip
+
+# Download and immediately extract JSON to disk
+ntsb-api download --year 2025 --month 4 \
+  --mode Aviation \
+  -o data/ntsb_2025_04.json \
+  --extract-json
+```
+
+### 2. Download a date range (ZIP or JSON)
+
+```bash
+# ZIP
+ntsb-api download-range \
+  --start-date 2025-04-01 \
+  --end-date   2025-04-30 \
+  --mode Aviation \
+  -o data/ntsb_2025_04_range.zip
+
+# JSON
+ntsb-api download-range \
+  --start-date 2025-04-01 \
+  --end-date   2025-04-30 \
+  --mode Aviation \
+  -o data/ntsb_2025_04_range.json \
+  --extract-json
+```
+
+Under the hood these commands:
+
+- call your local proxy server (`http://localhost:8000/api/v1/download/...`)
+- download the NTSB `FileExport` ZIP
+- optionally **extract the first `*.json` file** inside and write it to disk.
+
+### 3. Streamed JSON cases
+
+Use the proxy's in-memory parsing instead of writing files:
+
+```bash
+ntsb-api cases \
+  --start-date 2025-04-01 \
+  --end-date   2025-04-30 \
+  --mode Aviation \
+  --limit 50
+```
+
+This hits `/api/v1/cases` on the local server, which:
+
+- builds an NTSB `FileExport` payload for the date range + mode
+- downloads + parses the ZIP in memory
+- applies sorting/pagination
+- returns clean JSON (and the CLI prints a short summary).
+
+---
+
+## Python Usage
+
+### 1. Client setup
+
+```python
+from ntsb_api import NTSBClient
+
+client = NTSBClient(base_url="http://localhost:8000", timeout=60)
+```
+
+Make sure `ntsb-server` is running before you call the client.
+
+### 2. Download ZIPs programmatically
+
+```python
+# Month ZIP
+zip_bytes = client.download_month(2025, 4, mode="Aviation")
+
+# Save to disk
+with open("ntsb_2025_04.zip", "wb") as f:
+    f.write(zip_bytes)
+
+# Date range ZIP
+zip_bytes_range = client.download_date_range(
+    start_date="2025-04-01",
+    end_date="2025-04-30",
+    mode="Aviation",
+)
+```
+
+### 3. Streamed JSON cases
+
+```python
+cases_response = client.get_cases(
+    start_date="2025-04-01",
+    end_date="2025-04-30",
+    mode="Aviation",
+    limit=100,
+)
+
+for case in cases_response["data"]:
+    print(case["cm_ntsbNum"], case.get("cm_eventDate"))
+```
+
+This calls `/api/v1/cases`, which internally:
+
+1. Hits NTSB `FileExport` with a date-range payload.
+2. Parses the ZIP in memory (no disk I/O).
+3. Applies pagination/sorting.
+4. Returns a JSON envelope: `{"data": [...], "pagination": {...}, "metadata": {...}}`.
+
+### 4. Statistics
+
+```python
+stats = client.get_statistics(
+    start_date="2025-04-01",
+    end_date="2025-04-30",
+    mode="Aviation",
+)
+
+print(stats["totals"])
+```
+
+This maps to `/api/v1/stats` and returns aggregate counts
+computed over the parsed cases (fatalities, injuries, by state, etc.).
+
+---
+
+## Design Notes
+
+- **No persistence**: the proxy never stores NTSB data in a database.
+- **No hosting**: you run the FastAPI app locally; the author does not host it.
+- **No long-term cache**: each request hits the live NTSB API; any in-memory
+  state is per-process and short-lived.
+- **Good citizen**: a simple in-process rate limiter and retry logic are used
+  to avoid hammering NTSB or failing hard on transient network issues.
+

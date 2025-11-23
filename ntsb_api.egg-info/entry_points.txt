@@ -1,0 +1,3 @@
+[console_scripts]
+ntsb-api = ntsb_api.cli:main
+ntsb-server = ntsb_api.server.main:run_server
