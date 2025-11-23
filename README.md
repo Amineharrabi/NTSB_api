@@ -14,16 +14,18 @@ You install this library, run the server **locally**, and your code/CLI talks to
 
 ## Installation
 
-From a checkout (editable install):
+### From PyPI (recommended)
+
+```bash
+pip install "ntsb-api[server]"
+```
+
+This installs the core client/CLI plus the FastAPI server dependencies so you can run `ntsb-server` locally.
+
+### From a local checkout (for development)
 
 ```bash
 pip install -e .[server]
-```
-
-Once published to PyPI the typical install will be:
-
-```bash
-pip install ntsb-api
 ```
 
 ---
@@ -34,8 +36,12 @@ Start the FastAPI server (which proxies and parses NTSB data):
 
 ```bash
 ntsb-server
-# or
-uvicorn ntsb_api.server.main:app --reload
+```
+
+Or equivalently, using uvicorn directly:
+
+```bash
+python -m uvicorn ntsb_api.server.main:app --host 127.0.0.1 --port 8000
 ```
 
 The server exposes:

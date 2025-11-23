@@ -13,8 +13,13 @@ logger = logging.getLogger("ntsb_api.server")
 
 app = FastAPI(
     title="NTSB API Proxy",
-    version="1.0.0",
-    description="Proxy wrapper around the NTSB aviation accident data API.",
+    version="1.0.6",
+    description=(
+        "Local FastAPI proxy around the NTSB CAROL FileExport API. "
+        "Install via 'pip install \"ntsb-api[server]\"', run 'ntsb-server', "
+        "and access CLI / Python client docs in the project README: "
+        "https://github.com/Amineharrabi/ntsb-api"
+    ),
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
@@ -138,7 +143,7 @@ def run_server() -> None:
 
     uvicorn.run(
         "ntsb_api.server.main:app",
-        host="0.0.0.0",
+        host="127.0.0.1",
         port=8000,
-        reload=True,
+        reload=False,
     )

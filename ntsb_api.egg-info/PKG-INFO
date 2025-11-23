@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: NTSB-api
-Version: 1.0.0
+Version: 1.0.6
 Summary: A Python wrapper for the NTSB aviation accident database
 Home-page: https://github.com/Amineharrabi/ntsb-api
 Author: Amine harrabi
