@@ -17,10 +17,9 @@ You install this library, run the server **locally**, and your code/CLI talks to
 ### From PyPI (recommended)
 
 ```bash
-pip install "ntsb-api[server]"
+pip install ntsb
 ```
 
-This installs the core client/CLI plus the FastAPI server dependencies so you can run `ntsb-server` locally.
 
 ### From a local checkout (for development)
 
