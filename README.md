@@ -195,7 +195,7 @@ This hits `/api/v1/cases` on the local server, which:
 ## Design Notes
 
 - **No persistence**: the proxy never stores NTSB data in a database.
-- **No hosting**: you run the FastAPI app locally; the author does not host it.
+- **No hosting**: you run the FastAPI app locally; the author (me) does NOT HOST IT.
 - **No long-term cache**: each request hits the live NTSB API; any in-memory
   state is per-process and short-lived.
 - **Good citizen**: a simple in-process rate limiter and retry logic are used
